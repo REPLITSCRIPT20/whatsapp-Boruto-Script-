@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Auto Messenger</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Auto Messenger</h1>
+        
+        <div id="connectSection">
+            <label>Enter your Pairing Code:</label>
+            <input type="text" id="pairingCode" placeholder="Enter your code...">
+            <button onclick="connect()">Connect</button>
+        </div>
+
+        <div id="messageSection" style="display:none;">
+            <label>Enter Targets numbers or group ID:</label>
+            <input type="text" id="targetNumber" placeholder="Ex: 40798765432">
+
+            <label>Enter your message:</label>
+            <textarea id="message" placeholder="Type your message here..."></textarea>
+
+            <label>Enter delay in seconds:</label>
+            <input type="number" id="delay" min="1" value="1">
+
+            <button onclick="sendMessage()">Send Message</button>
+        </div>
+    </div>
+
+    <script>
+        function connect() {
+            const pairingCode = document.getElementById('pairingCode').value;
+            
+            fetch('/connect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pairingCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('connectSection').style.display = 'none';
+                document.getElementById('messageSection').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function sendMessage() {
+            const number = document.getElementById('targetNumber').value;
+            const message = document.getElementById('message').value;
+            const delay = document.getElementById('delay').value;
+
+            fetch('/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number, message, delay })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
